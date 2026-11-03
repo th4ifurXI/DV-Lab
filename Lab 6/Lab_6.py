@@ -10,6 +10,9 @@ import folium
 import streamlit as st
 from streamlit_folium import folium_static
 
+from pathlib import Path
+HERE = Path(__file__).parent
+
 STATES = [
     "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan",
     "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak",
@@ -37,7 +40,7 @@ def generate_data(states, metric, low, high, seed):
 
 @st.cache_data
 def load_map():
-    gdf = gpd.read_file("malaysia_states.geojson")
+    gdf = gpd.read_file(HERE / "malaysia_states.geojson")
     # find whichever column holds the state name ("name", "Name", "NAME_1"...)
     name_col = next(c for c in gdf.columns if c.lower() in ("name", "name_1", "state", "shapename"))
     gdf["name"] = gdf[name_col].replace(ALIASES)
