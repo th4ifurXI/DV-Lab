@@ -8,13 +8,16 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
 
+from pathlib import Path
+HERE = Path(__file__).parent
+
 st.set_page_config(page_title="Lab 7 - Map Visualization", layout="wide")
 
 
 # ---------------------------------------------------------------- data
 @st.cache_data
 def load_data():
-    gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
+    gdf = gpd.read_file(HERE / "ne_110m_admin_0_countries" / "ne_110m_admin_0_countries.shp")
     # Natural Earth uses UPPERCASE columns (NAME, POP_EST) - lower-case them so the
     # lab's 'pop_est' check finds the REAL population instead of making random numbers
     gdf.columns = [c.lower() if c != "geometry" else c for c in gdf.columns]
