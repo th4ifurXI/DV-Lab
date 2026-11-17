@@ -1,14 +1,19 @@
 """
 TFB3133 Data Visualization - Lab 6: Population Distribution Map (Streamlit + GeoPandas + Folium)
-Run:  streamlit run map_population.py
-Needs malaysia_states.geojson in the same folder.
+Run:  streamlit run Lab_6.py
+Needs malaysia_states2.geojson in the same folder as this script.
 """
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import geopandas as gpd
 import folium
 import streamlit as st
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
+
+# path relative to this script, so it also works on Streamlit Cloud
+GEOJSON = Path(__file__).parent / "malaysia_states2.geojson"
 
 STATES = [
     "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan",
@@ -16,7 +21,8 @@ STATES = [
     "Selangor", "Terengganu", "Kuala Lumpur", "Labuan", "Putrajaya",
 ]
 
-# GeoJSON files spell some states differently - map them to the names used in STATES
+# malaysia_states2.geojson already uses these exact names in its "name" property.
+# Kept as a safety net in case another GeoJSON spells a state differently.
 ALIASES = {
     "Federal Territory of Kuala Lumpur": "Kuala Lumpur", "Wilayah Persekutuan Kuala Lumpur": "Kuala Lumpur",
     "Federal Territory of Labuan": "Labuan", "Wilayah Persekutuan Labuan": "Labuan",
@@ -37,7 +43,7 @@ def generate_data(states, metric, low, high, seed):
 
 @st.cache_data
 def load_map():
-    gdf = gpd.read_file("malaysia_states.geojson")
+    gdf = gpd.read_file(GEOJSON)
     # find whichever column holds the state name ("name", "Name", "NAME_1"...)
     name_col = next(c for c in gdf.columns if c.lower() in ("name", "name_1", "state", "shapename"))
     gdf["name"] = gdf[name_col].replace(ALIASES)
@@ -107,7 +113,8 @@ def main():
                      hide_index=True, height=600)
         st.metric("Total", f"{data[metric].sum():,}")
     with c2:
-        folium_static(plot_map(gdf, data, metric, palette, imaginary), width=900, height=600)
+        st_folium(plot_map(gdf, data, metric, palette, imaginary), width=900, height=600,
+                  returned_objects=[])  # folium_static is deprecated
 
 
 if __name__ == "__main__":
