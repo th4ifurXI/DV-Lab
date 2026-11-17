@@ -52,12 +52,13 @@ def load_map():
 
 # ---------------------------------------------------------------- map (Task 2.3)
 def plot_map(gdf, data, metric, palette, imaginary):
-    m = folium.Map(location=[4.2105, 108.0], zoom_start=6, tiles="cartodbpositron")
+    m = folium.Map(location=[4.2105, 108.0], zoom_start=6, tiles="OpenStreetMap")  # free, no API key (CARTO now needs one)
     folium.Choropleth(
         geo_data=gdf, name=f"{metric} Distribution", data=data,
         columns=["State", metric], key_on="feature.properties.name",
         fill_color=palette, fill_opacity=0.75, line_opacity=0.4,
         nan_fill_color="lightgrey", legend_name=f"{metric} by state",
+        bins=4,  # fewer legend breaks so the numbers do not overlap
     ).add_to(m)
 
     # hover tooltip: state name + value
